@@ -12,7 +12,7 @@ class Cw26 extends StatefulWidget {
 
 class _Cw26State extends State<Cw26> {
   List<Transaction> transactions = [
-    Transaction(title: 'Coffe', amount: 150),
+    Transaction(title: 'Coffee', amount: 150),
     Transaction(title: 'Cinema', amount: 500),
     Transaction(title: 'Bus fare', amount: 20),
     Transaction(title: 'Water bill', amount: 300),
