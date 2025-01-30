@@ -1,3 +1,4 @@
+import 'package:cw26/helpers/format_datetime.dart';
 import 'package:cw26/models/transactions.dart';
 import 'package:flutter/material.dart';
 
@@ -12,16 +13,69 @@ class AddTransaction extends StatefulWidget {
 class _AddTransactionState extends State<AddTransaction> {
   var title = '';
   var amount = '';
+  var selectedDate = DateTime.now();
+  var selectedTimeOfDay = TimeOfDay.now();
+  final dateController = TextEditingController();
+  final timeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    dateController.text = formatDate(selectedDate);
+    timeController.text = formatTime(selectedTimeOfDay);
+  }
 
   void onCanceled() {
     Navigator.pop(context);
   }
 
   void onSave() {
-    final addTransaction =
-        Transaction(title: title, amount: double.parse(amount));
+    final dateTime = DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTimeOfDay.hour,
+      selectedTimeOfDay.minute,
+    );
+    final addTransaction = Transaction(
+      title: title,
+      amount: double.parse(amount),
+      dateTime: dateTime,
+    );
     widget.onTransactionCreated(addTransaction);
     Navigator.pop(context);
+  }
+
+  void onDateTap() async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year - 1, now.month, now.day);
+    final lastDate = DateTime(now.year + 1, now.month, now.day);
+
+    final dateFromUser = await showDatePicker(
+      context: context,
+      firstDate: firstDate,
+      lastDate: lastDate,
+      initialDate: selectedDate,
+    );
+    if (dateFromUser != null) {
+      setState(() {
+        selectedDate = dateFromUser;
+        dateController.text = formatDate(dateFromUser);
+      });
+    }
+  }
+
+  void onTimeTap() async {
+    final selectedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTimeOfDay,
+    );
+    if (selectedTime != null) {
+      setState(() {
+        selectedTimeOfDay = selectedTime;
+        timeController.text = formatTime(selectedTime);
+      });
+    }
   }
 
   @override
@@ -32,6 +86,31 @@ class _AddTransactionState extends State<AddTransaction> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onTap: onDateTap,
+                  readOnly: true,
+                  controller: dateController,
+                  decoration: InputDecoration(label: Text('Date')),
+                ),
+              ),
+              SizedBox(width: 15),
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  onTap: onTimeTap,
+                  controller: timeController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    label: Text('Time'),
+                  ),
+                ),
+              )
+            ],
+          ),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -57,9 +136,7 @@ class _AddTransactionState extends State<AddTransaction> {
               )),
             ],
           ),
-          SizedBox(
-            height: 16,
-          ),
+          SizedBox(height: 16),
           Row(
             children: [
               Expanded(
