@@ -11,6 +11,7 @@ class TransactionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final bodyLargeStyle = theme.textTheme.bodyLarge!;
     final titleSmallStyle = theme.textTheme.titleSmall!;
+    final category = transaction.category;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -34,8 +35,19 @@ class TransactionCard extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Row(
+                  children: [
+                    Icon(
+                      category.icon,
+                      size: 16,
+                      color: theme.colorScheme.tertiary,
+                    ),
+                    SizedBox(width: 4),
+                    Text(category.title, style: titleSmallStyle)
+                  ],
+                ),
                 Text(
                   formatDateTime(transaction.dateTime),
                   style: titleSmallStyle.copyWith(
